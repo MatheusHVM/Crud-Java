@@ -3,6 +3,7 @@ package com.example.Crud.controllers;
 import com.example.Crud.domain.product.Product;
 import com.example.Crud.domain.product.ProductRepository;
 import com.example.Crud.domain.product.RequestProduct;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,12 @@ public class ProductController {
             product.setPrice_in_cents(data.price_in_cents());
             return ResponseEntity.ok(product);
         }else {
-            return ResponseEntity.notFound().build();
+            throw new EntityNotFoundException();
         }
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity deleteProduct(@PathVariable String id){
         Optional<Product> optionalProduct = repository.findById(id);
         if (optionalProduct.isPresent()){
@@ -51,7 +53,7 @@ public class ProductController {
             product.setActive(false);
             return ResponseEntity.noContent().build();
         }else {
-            return ResponseEntity.notFound().build();
+            throw new EntityNotFoundException();
         }
     }
 }
